@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BeeGameApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dc433c9f11d84e39794b0d1f3deb6f7bef5eb4bb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+abccea10321b74a032f70ae8ee8cbd749d5c2b1b")]
 [assembly: System.Reflection.AssemblyProductAttribute("BeeGameApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BeeGameApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
