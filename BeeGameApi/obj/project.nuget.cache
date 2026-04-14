@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "PVvDmKkXL84=",
+  "success": true,
+  "projectFilePath": "D:\\CS 207 - Software Construction\\BeeGameBackend\\BeeGameApi\\BeeGameApi.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\thaia\\.nuget\\packages\\bcrypt.net-next\\4.1.0\\bcrypt.net-next.4.1.0.nupkg.sha512",
+    "C:\\Users\\thaia\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
+    "C:\\Users\\thaia\\.nuget\\packages\\mongodb.bson\\3.7.1\\mongodb.bson.3.7.1.nupkg.sha512",
+    "C:\\Users\\thaia\\.nuget\\packages\\mongodb.driver\\3.7.1\\mongodb.driver.3.7.1.nupkg.sha512",
+    "C:\\Users\\thaia\\.nuget\\packages\\sharpcompress\\0.30.1\\sharpcompress.0.30.1.nupkg.sha512",
+    "C:\\Users\\thaia\\.nuget\\packages\\snappier\\1.0.0\\snappier.1.0.0.nupkg.sha512",
+    "C:\\Users\\thaia\\.nuget\\packages\\zstdsharp.port\\0.7.3\\zstdsharp.port.0.7.3.nupkg.sha512"
+  ],
+  "logs": []
+}
