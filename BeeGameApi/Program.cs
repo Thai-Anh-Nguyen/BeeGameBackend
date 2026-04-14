@@ -8,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Get your MongoDB URI from an Environment Variable (for security on Render)
 var connectionString = builder.Configuration["MONGODB_URI"];
 var client = new MongoClient(connectionString);
-var database = client.GetDatabase("BeeGameDB");
+var database = client.GetDatabase("BuzzleDB");
 var players = database.GetCollection<BsonDocument>("users");
 
 // --- 2. ALLOW ITCH.IO (CORS) ---
