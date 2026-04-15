@@ -1,17 +1,16 @@
 using MongoDB.Driver;
 using MongoDB.Bson;
 using Microsoft.AspNetCore.Mvc;
+using BCrypt.Net; // For secure passwords
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. CONFIGURATION ---
-// Get your MongoDB URI from an Environment Variable (for security on Render)
 var connectionString = builder.Configuration["MONGODB_URI"];
 var client = new MongoClient(connectionString);
 var database = client.GetDatabase("BuzzleDB");
 var players = database.GetCollection<BsonDocument>("users");
 
-// --- 2. ALLOW ITCH.IO (CORS) ---
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowGame", policy => {
         policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
@@ -21,36 +20,51 @@ builder.Services.AddCors(options => {
 var app = builder.Build();
 app.UseCors("AllowGame");
 
-// --- 3. ENDPOINTS ---
+// --- 2. AUTHENTICATION (Login & Register) ---
 
-// REGISTER / LOGIN (Upsert pattern)
 app.MapPost("/auth", async ([FromBody] BsonDocument body) => {
     var username = body["Username"].AsString;
-    var password = body["Password"].AsString; // In a real app, hash this!
+    var password = body["Password"].AsString;
     
     var filter = Builders<BsonDocument>.Filter.Eq("Username", username);
     var user = await players.Find(filter).FirstOrDefaultAsync();
 
     if (user == null) {
-        // Create new user if they don't exist
+        // REGISTER: Hash the password before saving
+        body["Password"] = BCrypt.Net.BCrypt.HashPassword(password);
+        // Initialize with an empty game data object if it doesn't exist
+        if (!body.Contains("GameData")) body["GameData"] = new BsonDocument();
+        
         await players.InsertOneAsync(body);
-        return Results.Ok("Account Created");
+        return Results.Ok(new { message = "Account Created" });
     }
-    return Results.Ok("Logged In");
+
+    // LOGIN: Verify the hashed password
+    bool isValid = BCrypt.Net.BCrypt.Verify(password, user["Password"].AsString);
+    if (isValid) {
+        // Return the saved game data upon successful login
+        return Results.Ok(new { 
+            message = "Logged In", 
+            gameData = user.Contains("GameData") ? user["GameData"] : new BsonDocument() 
+        });
+    }
+
+    return Results.Unauthorized();
 });
 
-// SAVE GAME
-app.MapPost("/save", async ([FromBody] BsonDocument data) => {
-    var filter = Builders<BsonDocument>.Filter.Eq("Username", data["Username"].AsString);
-    await players.ReplaceOneAsync(filter, data, new ReplaceOptions { IsUpsert = true });
-    return Results.Ok("Cloud Saved");
-});
+// --- 3. SAVE GAME ---
 
-// LOAD GAME
-app.MapGet("/load/{username}", async (string username) => {
+app.MapPost("/save", async ([FromBody] BsonDocument body) => {
+    var username = body["Username"].AsString;
+    var newGameData = body["GameData"].AsBsonDocument;
+
     var filter = Builders<BsonDocument>.Filter.Eq("Username", username);
-    var user = await players.Find(filter).FirstOrDefaultAsync();
-    return user != null ? Results.Content(user.ToJson(), "application/json") : Results.NotFound();
+    
+    // Update ONLY the GameData field to preserve the Password and Username fields
+    var update = Builders<BsonDocument>.Update.Set("GameData", newGameData);
+    
+    var result = await players.UpdateOneAsync(filter, update);
+    return result.ModifiedCount > 0 ? Results.Ok("Cloud Saved") : Results.NotFound();
 });
 
 app.Run();
